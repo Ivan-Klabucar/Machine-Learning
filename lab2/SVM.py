@@ -10,6 +10,7 @@ class SVM:
         self.C = C
         self.supp_vecs = []
         self.supp_vecs_alfai_ti = []
+        self.supp_alfai = []
         self.b = None
     
     def ind(self, x):
@@ -50,6 +51,7 @@ class SVM:
             if a > 1e-5:
                 self.supp_vecs.append(training_set[i])
                 self.supp_vecs_alfai_ti.append(training_labels[i] * a)
+                self.supp_alfai.append(a)
                 if not self.C or a <= (self.C - 1e-5): # not sure if we need to allow for tolerance
                     svec_for_b_calculation = training_set[i]
                     svec_for_b_t = training_labels[i]
