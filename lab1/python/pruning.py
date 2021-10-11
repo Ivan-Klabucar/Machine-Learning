@@ -61,6 +61,10 @@ def analyse_pruning(data, test, name):
     plt.bar(x_pos - 0.2, means_p, align='center', zorder=4, width=0.4, color='bisque')
     plt.bar(x_pos + 0.2, means_up, align='center', zorder=4, width=0.4, color='cornflowerblue')
     plt.grid(zorder=0, axis='y')
+    for i, v in enumerate(means_p):
+        plt.text(x_pos[i] - 0.32, v + 0.0003, '{:0.2}'.format(v), fontsize=6)
+    for i, v in enumerate(means_up):
+        plt.text(x_pos[i] + 0.03, v + 0.0003, '{:0.2}'.format(v), fontsize=6)
     plt.xticks(x_pos, possible_frac)
     plt.ylabel('Mean Accuracy (%)')
     plt.xlabel('Fraction of data used for training')
@@ -73,6 +77,10 @@ def analyse_pruning(data, test, name):
     num_of_fig += 1
     plt.bar(x_pos - 0.2, stddevs_p, align='center', zorder=4, width=0.4, color='bisque')
     plt.bar(x_pos + 0.2, stddevs_up, align='center', zorder=4, width=0.4, color='cornflowerblue')
+    for i, v in enumerate(stddevs_p):
+        plt.text(x_pos[i] - 0.43, v + 0.0005, '{:0.2}'.format(v), fontsize=6)
+    for i, v in enumerate(stddevs_up):
+        plt.text(x_pos[i] + 0.05, v + 0.0005, '{:0.2}'.format(v), fontsize=6)
     plt.grid(zorder=0, axis='y')
     plt.xticks(x_pos, possible_frac)
     plt.ylabel('Std of Accuracy')
