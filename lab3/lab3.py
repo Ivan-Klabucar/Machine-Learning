@@ -44,7 +44,8 @@ def computePrior(labels, W=None):
 
     # TODO: compute the values of prior for each class!
     # ==========================
-    
+    for i, c in enumerate(classes):
+        prior[i] = ((labels == c).sum() / Npts)
     # ==========================
 
     return prior
@@ -66,9 +67,14 @@ def mlParams(X, labels, W=None):
     mu = np.zeros((Nclasses,Ndims))
     sigma = np.zeros((Nclasses,Ndims,Ndims))
 
-    # TODO: fill in the code to compute mu and sigma!
+    # [DONE!] TODO: fill in the code to compute mu and sigma!
     # ==========================
-    
+    for i, c in enumerate(classes):
+        idx = labels == c
+        xlc = X[idx,:]
+        Nk = xlc.shape[0]
+        mu[i] = (1/Nk) * np.sum(xlc, axis=0)
+        sigma[i] = np.diag((1/Nk) * np.sum(np.square(xlc - mu[i]), axis=0))
     # ==========================
 
     return mu, sigma
@@ -86,7 +92,12 @@ def classifyBayes(X, prior, mu, sigma):
 
     # TODO: fill in the code to compute the log posterior logProb!
     # ==========================
-    
+    for i in range(Nclasses):
+        Xc = X - mu[i]
+        sigma_inv = np.diag(1./np.diag(sigma[i]))
+        logProb[i] = (-0.5) * np.log(np.linalg.det(sigma[i])) + \
+                     (-0.5) * np.einsum('ij,ji->i', Xc @ sigma_inv, Xc.T) + \
+                     np.log(prior[i])                                           # np.einsum(...) is like np.diag((Xc @ sigma_inv) @ Xc.T) but doesn't do all the unnecessary computation
     # ==========================
     
     # one possible way of finding max a-posteriori once
@@ -127,15 +138,15 @@ plotGaussian(X,labels,mu,sigma)
 # Call the `testClassifier` and `plotBoundary` functions for this part.
 
 
-#testClassifier(BayesClassifier(), dataset='iris', split=0.7)
+testClassifier(BayesClassifier(), dataset='iris', split=0.7)
 
 
 
-#testClassifier(BayesClassifier(), dataset='vowel', split=0.7)
+testClassifier(BayesClassifier(), dataset='vowel', split=0.7)
 
 
 
-#plotBoundary(BayesClassifier(), dataset='iris',split=0.7)
+plotBoundary(BayesClassifier(), dataset='iris',split=0.7)
 
 
 # ## Boosting functions to implement
