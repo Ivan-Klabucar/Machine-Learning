@@ -71,10 +71,11 @@ def mlParams(X, labels, W=None):
     # ==========================
     for i, c in enumerate(classes):
         idx = labels == c
+        wc = W[idx,:]
         xlc = X[idx,:]
-        Nk = xlc.shape[0]
-        mu[i] = (1/Nk) * np.sum(xlc, axis=0)
-        sigma[i] = np.diag((1/Nk) * np.sum(np.square(xlc - mu[i]), axis=0))
+        xlc_weighted = wc * xlc
+        mu[i] = (1/wc.sum()) * np.sum(xlc_weighted, axis=0)
+        sigma[i] = np.diag((1/wc.sum()) * np.sum(wc * np.square(xlc - mu[i]), axis=0))
     # ==========================
 
     return mu, sigma
