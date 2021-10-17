@@ -45,7 +45,8 @@ def computePrior(labels, W=None):
     # TODO: compute the values of prior for each class!
     # ==========================
     for i, c in enumerate(classes):
-        prior[i] = ((labels == c).sum() / Npts)
+        #prior[i] = ((labels == c).sum() / Npts) # without weights
+        prior[i] = W[labels == c].sum() # with weights
     # ==========================
 
     return prior
@@ -131,9 +132,9 @@ class BayesClassifier(object):
 # Call `genBlobs` and `plotGaussian` to verify your estimates.
 
 
-X, labels = genBlobs(centers=5)
-mu, sigma = mlParams(X,labels)
-plotGaussian(X,labels,mu,sigma)
+#X, labels = genBlobs(centers=5)
+#mu, sigma = mlParams(X,labels)
+#plotGaussian(X,labels,mu,sigma)
 
 
 # Call the `testClassifier` and `plotBoundary` functions for this part.
@@ -180,8 +181,12 @@ def trainBoost(base_classifier, X, labels, T=10):
 
         # TODO: Fill in the rest, construct the alphas etc.
         # ==========================
-        
-        # alphas.append(alpha) # you will need to append the new alpha
+        delta = np.expand_dims(vote == labels, -1)
+        e = (wCur * (1 - delta)).sum() + 1e-10 #numerical stability
+        alpha = 0.5 * (np.math.log(1 - e) - np.math.log(e))
+        wCur *= np.exp(-alpha * (delta * 2 - 1))
+        wCur /= wCur.sum()
+        alphas.append(alpha) # you will need to append the new alpha
         # ==========================
         
     return classifiers, alphas
@@ -204,7 +209,10 @@ def classifyBoost(X, classifiers, alphas, Nclasses):
         # TODO: implement classificiation when we have trained several classifiers!
         # here we can do it by filling in the votes vector with weighted votes
         # ==========================
-        
+        for c in range(Nclasses):
+            for t, classifier in enumerate(classifiers):
+                vote = classifier.classify(X)
+                votes[:, c] += alphas[t] * (vote == (c * np.ones_like(vote)))
         # ==========================
 
         # one way to compute yPred after accumulating the votes
@@ -237,41 +245,41 @@ class BoostClassifier(object):
 # Call the `testClassifier` and `plotBoundary` functions for this part.
 
 
-#testClassifier(BoostClassifier(BayesClassifier(), T=10), dataset='iris',split=0.7)
+testClassifier(BoostClassifier(BayesClassifier(), T=10), dataset='iris',split=0.7)
 
 
 
-#testClassifier(BoostClassifier(BayesClassifier(), T=10), dataset='vowel',split=0.7)
+testClassifier(BoostClassifier(BayesClassifier(), T=10), dataset='vowel',split=0.7)
 
 
 
-#plotBoundary(BoostClassifier(BayesClassifier()), dataset='iris',split=0.7)
+plotBoundary(BoostClassifier(BayesClassifier()), dataset='iris',split=0.7)
 
 
 # Now repeat the steps with a decision tree classifier.
 
 
-#testClassifier(DecisionTreeClassifier(), dataset='iris', split=0.7)
+testClassifier(DecisionTreeClassifier(), dataset='iris', split=0.7)
 
 
 
-#testClassifier(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='iris',split=0.7)
+testClassifier(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='iris',split=0.7)
 
 
 
-#testClassifier(DecisionTreeClassifier(), dataset='vowel',split=0.7)
+testClassifier(DecisionTreeClassifier(), dataset='vowel',split=0.7)
 
 
 
-#testClassifier(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='vowel',split=0.7)
+testClassifier(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='vowel',split=0.7)
 
 
 
-#plotBoundary(DecisionTreeClassifier(), dataset='iris',split=0.7)
+plotBoundary(DecisionTreeClassifier(), dataset='iris',split=0.7)
 
 
 
-#plotBoundary(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='iris',split=0.7)
+plotBoundary(BoostClassifier(DecisionTreeClassifier(), T=10), dataset='iris',split=0.7)
 
 
 # ## Bonus: Visualize faces classified using boosted decision trees
