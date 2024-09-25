@@ -1,4 +1,6 @@
-# Machine Learning
+# Machine Learning – DD2421
+
+### KTH Royal Institute of Technology in Stockholm
 
 Laboratory exercise solutions for:
 - Lab 1: Decision Trees
